@@ -1,0 +1,1147 @@
+DOCUMENTAÇÃO TÉCNICA
+SISTEMA DE GERENCIAMENTO DE CHAMADOS DE TI
+Versão 1.0
+
+======================================================================
+SUMÁRIO
+======================================================================
+1. Apresentação do projeto
+2. Objetivo geral
+3. Assunto e justificativa
+4. Funcionamento geral
+5. Requisitos funcionais
+6. Requisitos não funcionais
+7. Perfis e permissões
+8. Estrutura dos chamados
+9. Categorias e status
+10. Gerenciamento de usuários
+11. Gerenciamento de chamados
+12. Atendimentos e encerramento
+13. Perfil e histórico do usuário
+14. Modelagem do banco de dados
+15. Entidades e relacionamentos
+16. Regras de integridade e JPA
+17. Paginação e filtros
+18. Auditoria e transações
+19. Validações e tratamento de erros
+20. Tecnologias e dependências
+21. Ordem de desenvolvimento
+22. Critérios de aceitação e testes
+23. Estrutura definitiva de pacotes
+24. Recomendações técnicas
+25. Script SQL inicial (PostgreSQL)
+26. Conclusão
+
+======================================================================
+1. APRESENTAÇÃO DO PROJETO
+======================================================================
+
+1.1. Nome do projeto
+
+Sistema Web de Gerenciamento e Controle de Chamados de Suporte Técnico de TI.
+
+1.2. Objetivo geral
+
+Desenvolver um sistema web para centralizar e organizar as solicitações de
+suporte técnico de TI, permitindo que usuários registrem problemas,
+acompanhem seus chamados e consultem o andamento dos atendimentos.
+
+A aplicação também permitirá que administradores gerenciem usuários,
+atualizem chamados, atribuam responsáveis, registrem soluções e acompanhem
+o histórico de atendimentos.
+
+O sistema deverá proporcionar maior organização, segurança, controle e
+rastreabilidade das solicitações de suporte técnico.
+
+1.3. Assunto do projeto
+
+O projeto aborda o desenvolvimento de uma aplicação web voltada ao
+gerenciamento de chamados de suporte técnico, utilizando Java, Spring Boot,
+Spring Security e Spring Data JPA.
+
+O foco está na automatização do processo de abertura, acompanhamento e
+encerramento de solicitações, com controle de acesso por perfil, persistência
+de dados e registro das atividades realizadas.
+
+1.4. Justificativa
+
+A utilização de um sistema centralizado permite substituir controles manuais
+e informações dispersas por um processo organizado de gerenciamento de
+chamados.
+
+Com isso, torna-se possível acompanhar solicitações, identificar
+responsáveis, registrar soluções, consultar históricos e manter informações
+acessíveis de maneira estruturada.
+
+1.5. Resultado esperado
+
+- Centralizar as solicitações de suporte.
+- Organizar os chamados por categoria.
+- Acompanhar o status dos atendimentos.
+- Identificar os responsáveis.
+- Registrar soluções e observações.
+- Consultar históricos.
+- Controlar usuários e permissões.
+- Preservar a rastreabilidade das operações.
+
+======================================================================
+2. FUNCIONAMENTO GERAL
+======================================================================
+
+O sistema terá dois perfis principais: usuário comum e administrador.
+
+USUÁRIO COMUM
+- Abrir chamados.
+- Consultar seus próprios chamados.
+- Visualizar detalhes permitidos.
+- Acompanhar o andamento dos chamados.
+- Acessar o próprio perfil.
+- Consultar o próprio histórico de chamados.
+
+ADMINISTRADOR
+- Cadastrar, consultar, atualizar e excluir logicamente usuários.
+- Consultar chamados.
+- Visualizar detalhes dos chamados.
+- Atualizar informações dos chamados.
+- Alterar status.
+- Definir responsáveis.
+- Registrar atendimentos.
+- Encerrar chamados.
+- Consultar o histórico de atendimentos.
+- Consultar registros de auditoria.
+
+Fluxo geral:
+1. O usuário realiza login.
+2. O sistema identifica seu perfil.
+3. O usuário ou administrador registra um chamado.
+4. O sistema identifica automaticamente o solicitante, gera o ID,
+   registra a data e define o status inicial ABERTO.
+5. O administrador consulta o chamado e define o responsável.
+6. O status pode ser alterado para EM_ANDAMENTO.
+7. O administrador registra o atendimento e a solução.
+8. O sistema altera o status para FECHADO e registra o histórico.
+
+======================================================================
+3. REQUISITOS FUNCIONAIS
+======================================================================
+
+Os requisitos funcionais descrevem as operações que o sistema deverá executar.
+
+RF01 - Permitir autenticação de usuários.
+RF02 - Permitir cadastro de usuários.
+RF03 - Permitir atualização de usuários.
+RF04 - Permitir exclusão lógica de usuários.
+RF05 - Permitir consulta dos detalhes de usuários.
+RF06 - Permitir abertura de chamados.
+RF07 - Identificar automaticamente o solicitante autenticado.
+RF08 - Gerar o ID do chamado automaticamente.
+RF09 - Registrar data e hora de abertura automaticamente.
+RF10 - Permitir consulta de chamados.
+RF11 - Permitir visualização dos detalhes dos chamados.
+RF12 - Permitir atualização administrativa de chamados.
+RF13 - Permitir alteração do status.
+RF14 - Permitir atribuição de responsável.
+RF15 - Permitir exclusão lógica de chamados.
+RF16 - Permitir registro de atendimentos.
+RF17 - Permitir encerramento de chamados.
+RF18 - Permitir consulta do histórico de atendimentos.
+RF19 - Permitir consulta do histórico pessoal de chamados.
+RF20 - Permitir gerenciamento do perfil.
+RF21 - Permitir pesquisa e filtragem de chamados.
+RF22 - Implementar paginação.
+RF23 - Registrar auditoria das operações.
+RF24 - Controlar permissões por perfil.
+
+======================================================================
+4. REQUISITOS NÃO FUNCIONAIS
+======================================================================
+
+RNF01 - O backend deverá utilizar Java e Spring Boot.
+RNF02 - O sistema deverá utilizar PostgreSQL como banco de dados previsto.
+RNF03 - O acesso deverá ser protegido pelo Spring Security.
+RNF04 - As senhas deverão ser armazenadas com BCrypt.
+RNF05 - O sistema deverá utilizar Spring Data JPA.
+RNF06 - Os dados deverão possuir validações.
+RNF07 - O sistema deverá preservar os registros históricos.
+RNF08 - As consultas deverão suportar paginação.
+RNF09 - Operações relacionadas deverão utilizar transações.
+RNF10 - O código deverá ser organizado por responsabilidades.
+RNF11 - A API deverá utilizar DTOs para entrada e saída de dados.
+RNF12 - O banco deverá possuir controle de versões por migrations.
+
+======================================================================
+5. PERFIS E PERMISSÕES
+======================================================================
+
+Perfis previstos:
+- ROLE_USER: usuário comum.
+- ROLE_ADMIN: administrador.
+
+MATRIZ DE PERMISSÕES
+
+Funcionalidade                         Usuário comum     Administrador
+Abrir chamado                          Sim               Sim
+Consultar chamados                     Somente próprios  Todos
+Visualizar detalhes                    Somente próprios  Todos
+Atualizar chamado                      Não               Sim
+Alterar status                         Não               Sim
+Definir responsável                    Não               Sim
+Excluir chamado                        Não               Sim
+Registrar atendimento                  Não               Sim
+Encerrar chamado                       Não               Sim
+Cadastrar usuário                      Não               Sim
+Atualizar usuário                      Não               Sim
+Excluir usuário                        Não               Sim
+Histórico de atendimentos              Não               Sim
+Visualizar perfil                      Sim               Sim
+Histórico pessoal                      Sim               Sim
+
+A autorização deverá ser aplicada no backend e, quando houver interface,
+também na apresentação. Esconder um botão na interface não é uma medida de
+segurança suficiente. O backend deverá bloquear diretamente as operações
+não autorizadas.
+
+======================================================================
+6. ESTRUTURA DOS CHAMADOS
+======================================================================
+
+Cada chamado deverá possuir os seguintes campos:
+
+Campo             Descrição
+ID                Identificador único do chamado, gerado automaticamente.
+Solicitante       Usuário autenticado que abriu o chamado.
+Local             Local onde ocorre o problema.
+Categoria         Tipo da solicitação.
+Problema          Descrição do problema informado.
+Observação        Informações adicionais, quando houver.
+Status            Situação atual do chamado.
+Aberto quando     Data e hora de abertura preenchidas automaticamente.
+Responsável       Administrador responsável pelo atendimento.
+Ação              Operações disponíveis conforme as permissões.
+
+O campo "Ação" representa operações da interface e não precisa ser uma
+coluna armazenada na tabela do banco de dados.
+
+6.1. Abertura automática
+
+Ao registrar um chamado, o backend deverá:
+1. Gerar o ID automaticamente.
+2. Identificar o solicitante autenticado.
+3. Registrar a data e hora de abertura.
+4. Definir o status inicial como ABERTO.
+5. Salvar as informações do chamado.
+6. Registrar a abertura no histórico de auditoria.
+
+O solicitante não deverá ser escolhido livremente pelo frontend. O backend
+deverá obter a identidade do usuário por meio do contexto de segurança.
+
+======================================================================
+7. CATEGORIAS E STATUS
+======================================================================
+
+7.1. Categorias disponíveis
+
+1. Impressora.
+2. Rede / Internet.
+3. Computador / Notebook.
+4. Periférico ou cabo com defeito.
+5. Sistema / Software.
+6. Acesso ou senha.
+7. Solicitação de material ou equipamento.
+8. Outro.
+
+O usuário deverá selecionar uma categoria no formulário de abertura.
+Categorias utilizadas em chamados antigos deverão ser preservadas. Uma
+categoria inativa não poderá ser selecionada em novos chamados.
+
+7.2. Status disponíveis
+
+ABERTO
+Chamado registrado e aguardando atendimento.
+
+EM_ANDAMENTO
+Chamado que está sendo atendido.
+
+FECHADO
+Atendimento encerrado.
+
+O encerramento deverá exigir o registro de uma solução.
+Um chamado fechado não deverá ser encerrado novamente sem uma operação
+autorizada de reabertura.
+
+======================================================================
+8. GERENCIAMENTO DE USUÁRIOS
+======================================================================
+
+8.1. Cadastro
+
+O administrador poderá cadastrar novos usuários.
+
+Dados previstos:
+- ID.
+- Nome.
+- Login.
+- Senha.
+- Perfil.
+- Situação da conta.
+
+8.2. Atualização
+
+O administrador poderá atualizar os dados permitidos de um usuário.
+A alteração de senha deverá possuir fluxo próprio e armazenar a nova senha
+com BCrypt. Senhas nunca deverão ser retornadas pela API.
+
+8.3. Exclusão
+
+A exclusão será lógica, por meio da desativação da conta e do preenchimento
+de um campo de data de exclusão. Os registros relacionados deverão ser
+preservados.
+
+8.4. Proteção do último administrador
+
+Antes de desativar ou excluir logicamente um administrador, o backend deverá
+verificar quantos administradores ativos existem.
+
+- Se existirem outros administradores ativos, a operação poderá ser permitida,
+  desde que as demais regras sejam atendidas.
+- Se existir apenas um administrador ativo, sua desativação deverá ser
+  impedida.
+
+A verificação deverá ser transacional e usar bloqueio apropriado para reduzir
+o risco de duas operações simultâneas desativarem os últimos administradores.
+
+======================================================================
+9. GERENCIAMENTO DE CHAMADOS
+======================================================================
+
+9.1. Abrir chamado
+
+Acesso: usuário comum e administrador.
+
+Campos do formulário:
+- Solicitante: identificado automaticamente pelo backend.
+- Local.
+- Categoria: seleção de uma das categorias disponíveis.
+- Problema.
+- Observação.
+
+Botão: REGISTRAR CHAMADO.
+
+9.2. Visualizar chamados
+
+O sistema deverá apresentar uma tabela com informações como:
+
+ID | Solicitante | Categoria | Status | Responsável | Ação
+
+O usuário comum visualizará apenas seus próprios chamados. O administrador
+poderá consultar todos os chamados ativos, respeitando filtros e paginação.
+
+9.3. Detalhes do chamado
+
+O detalhe deverá apresentar os dados do chamado, o solicitante, a categoria,
+o problema, as observações, o status, as datas, o responsável e os registros
+de atendimento permitidos ao perfil autenticado.
+
+9.4. Atualizar chamado
+
+Acesso: somente administrador.
+
+O administrador poderá:
+- Atualizar problema.
+- Atualizar observação.
+- Alterar categoria, quando permitido.
+- Alterar status.
+- Definir ou atualizar responsável.
+
+As alterações relevantes deverão gerar registros de auditoria com o valor
+anterior e o novo valor.
+
+9.5. Excluir chamado
+
+Acesso: somente administrador.
+
+A exclusão deverá ser lógica, usando um campo de data de exclusão. Os
+atendimentos e históricos deverão permanecer preservados.
+
+======================================================================
+10. ATENDIMENTOS E ENCERRAMENTO
+======================================================================
+
+10.1. Histórico de atendimentos
+
+Acesso: somente administrador.
+
+Criar a funcionalidade/botão "Histórico de Atendimentos", com tabela
+filtrável contendo, quando aplicável:
+- ID do atendimento.
+- ID do chamado.
+- Solicitante.
+- Responsável.
+- Categoria.
+- Status atual.
+- Data de abertura.
+- Data do atendimento.
+- Solução registrada.
+
+Filtros previstos:
+- ID do chamado.
+- Nome do solicitante.
+- Responsável.
+- Categoria.
+- Status.
+- Período.
+
+10.2. Encerrar chamado
+
+Acesso: somente administrador.
+
+Campos:
+- ID do chamado.
+- Responsável.
+- Observação.
+- O que foi resolvido (solução).
+
+Botão: REGISTRAR ATENDIMENTO.
+
+10.3. Regras de encerramento
+
+Ao registrar o atendimento, o sistema deverá:
+1. Verificar se o chamado existe e não está excluído.
+2. Verificar se o status permite encerramento.
+3. Identificar o administrador autenticado.
+4. Exigir uma solução preenchida.
+5. Registrar o atendimento.
+6. Atualizar o status do chamado para FECHADO.
+7. Registrar a alteração no histórico.
+8. Confirmar as operações na mesma transação.
+
+Os atendimentos anteriores deverão ser preservados. Um novo atendimento
+não deverá sobrescrever o registro de atendimento anterior.
+
+======================================================================
+11. PERFIL E HISTÓRICO DO USUÁRIO
+======================================================================
+
+Os dois perfis poderão acessar a funcionalidade "Perfil".
+
+Informações previstas:
+- Nome.
+- Login.
+- Perfil.
+- Histórico de chamados do usuário.
+
+O usuário comum poderá consultar seu próprio histórico. O administrador
+poderá consultar os dados de acordo com suas permissões administrativas.
+
+======================================================================
+12. MODELAGEM DO BANCO DE DADOS
+======================================================================
+
+Banco previsto: PostgreSQL.
+
+O banco será relacional e utilizará chaves primárias, chaves estrangeiras,
+restrições e índices para manter a integridade dos dados.
+
+Entidades principais:
+- Usuario: tabela usuarios.
+- Categoria: tabela categorias.
+- Chamado: tabela chamados.
+- Atendimento: tabela atendimentos.
+- HistoricoChamado: tabela historico_chamado.
+
+12.1. Relacionamentos
+
+- Um usuário pode solicitar vários chamados.
+- Um usuário administrador pode ser responsável por vários chamados.
+- Uma categoria pode estar associada a vários chamados.
+- Um chamado pode possuir vários atendimentos.
+- Um chamado pode possuir vários registros de histórico.
+- Um usuário pode realizar vários atendimentos.
+- Um usuário pode executar várias operações registradas no histórico.
+
+12.2. Modelo textual de relacionamento
+
+USUARIO 1 -------- N CHAMADO (solicitante)
+USUARIO 1 -------- N CHAMADO (responsável, quando definido)
+CATEGORIA 1 ------ N CHAMADO
+CHAMADO 1 -------- N ATENDIMENTO
+USUARIO 1 -------- N ATENDIMENTO (responsável)
+CHAMADO 1 -------- N HISTORICO_CHAMADO
+USUARIO 1 -------- N HISTORICO_CHAMADO (autor da operação)
+
+======================================================================
+13. ENTIDADES E ATRIBUTOS DO BANCO DE DADOS
+======================================================================
+
+13.1. Entidade Usuario
+Tabela: usuarios
+
+Campo          Tipo PostgreSQL      Regra
+id             BIGINT               PK, identidade automática
+nome           VARCHAR(150)         NOT NULL
+login          VARCHAR(150)         NOT NULL, UNIQUE
+senha          VARCHAR(255)         NOT NULL
+perfil         VARCHAR(20)          NOT NULL: USER ou ADMIN
+ativo          BOOLEAN              NOT NULL, DEFAULT TRUE
+criado_em      TIMESTAMPTZ          NOT NULL, DEFAULT CURRENT_TIMESTAMP
+atualizado_em  TIMESTAMPTZ          Atualizado pela aplicação
+excluido_em    TIMESTAMPTZ          NULL; preenchido na exclusão lógica
+
+Regras:
+- O login não poderá ser repetido.
+- A senha deverá ser armazenada com BCrypt.
+- O perfil definirá as permissões.
+- Usuários excluídos logicamente não poderão autenticar.
+- O último administrador ativo não poderá ser desativado.
+
+13.2. Entidade Categoria
+Tabela: categorias
+
+Campo   Tipo PostgreSQL   Regra
+id      BIGINT            PK, identidade automática
+nome    VARCHAR(100)      NOT NULL, UNIQUE
+ativa   BOOLEAN           NOT NULL, DEFAULT TRUE
+
+Regras:
+- Não permitir categorias duplicadas.
+- Categorias inativas não poderão ser usadas em novos chamados.
+- Categorias utilizadas anteriormente deverão ser preservadas.
+
+13.3. Entidade Chamado
+Tabela: chamados
+
+Campo             Tipo PostgreSQL      Regra
+id                BIGINT               PK, identidade automática
+solicitante_id    BIGINT               FK para usuarios, obrigatório
+categoria_id      BIGINT               FK para categorias, obrigatório
+responsavel_id    BIGINT               FK para usuarios, opcional
+local             VARCHAR(150)         NOT NULL
+problema          TEXT                 NOT NULL
+observacao        TEXT                 Opcional
+status            VARCHAR(20)          NOT NULL, padrão ABERTO
+aberto_em         TIMESTAMPTZ          NOT NULL, automático
+atualizado_em     TIMESTAMPTZ          Atualizado pela aplicação
+excluido_em       TIMESTAMPTZ          NULL; exclusão lógica
+
+Regras:
+- Solicitante identificado no backend pelo usuário autenticado.
+- Responsável poderá permanecer NULL até ser atribuído.
+- Status permitido: ABERTO, EM_ANDAMENTO ou FECHADO.
+- Apenas administradores poderão alterar informações administrativas.
+- Exclusão será lógica.
+
+13.4. Entidade Atendimento
+Tabela: atendimentos
+
+Campo           Tipo PostgreSQL      Regra
+id              BIGINT               PK, identidade automática
+chamado_id      BIGINT               FK para chamados, obrigatório
+responsavel_id  BIGINT               FK para usuarios, obrigatório
+observacao      TEXT                 Opcional
+solucao         TEXT                 NOT NULL
+realizado_em    TIMESTAMPTZ          NOT NULL, automático
+
+Regras:
+- Somente administradores poderão registrar atendimentos.
+- A solução será obrigatória.
+- O responsável deverá ser identificado pelo backend.
+- A data e hora serão registradas automaticamente.
+- Os registros anteriores não poderão ser sobrescritos.
+
+13.5. Entidade HistoricoChamado
+Tabela: historico_chamado
+
+Campo            Tipo PostgreSQL      Regra
+id               BIGINT               PK, identidade automática
+chamado_id       BIGINT               FK para chamados, obrigatório
+usuario_id       BIGINT               FK para usuarios, obrigatório
+acao             VARCHAR(50)          NOT NULL
+campo_alterado   VARCHAR(100)         Opcional
+valor_anterior   TEXT                 Opcional
+valor_novo       TEXT                 Opcional
+criado_em        TIMESTAMPTZ          NOT NULL, automático
+
+Exemplos de ações:
+- CHAMADO_ABERTO.
+- CHAMADO_ATUALIZADO.
+- STATUS_ALTERADO.
+- RESPONSAVEL_ALTERADO.
+- ATENDIMENTO_REGISTRADO.
+- CHAMADO_ENCERRADO.
+- CHAMADO_EXCLUIDO.
+- CHAMADO_REABERTO.
+
+O histórico deverá ser gerado pelo backend e não poderá ser alterado por
+usuários comuns. Os registros deverão ser preservados.
+
+======================================================================
+14. REGRAS DE INTEGRIDADE E JPA
+======================================================================
+
+14.1. Relacionamentos JPA previstos
+
+Usuario       @OneToMany -> Chamado como solicitante
+Usuario       @OneToMany -> Chamado como responsável
+Categoria     @OneToMany -> Chamado
+Chamado       @ManyToOne -> Usuario solicitante
+Chamado       @ManyToOne -> Usuario responsável
+Chamado       @ManyToOne -> Categoria
+Chamado       @OneToMany -> Atendimento
+Chamado       @OneToMany -> HistoricoChamado
+Atendimento   @ManyToOne -> Usuario responsável
+Historico     @ManyToOne -> Usuario autor
+
+14.2. Anotações previstas
+
+@Entity                 Identifica uma entidade JPA.
+@Table                  Define a tabela.
+@Id                     Define a chave primária.
+@GeneratedValue         Configura geração do identificador.
+@Column                 Configura a coluna.
+@ManyToOne              Define relacionamento muitos para um.
+@OneToMany              Define relacionamento um para muitos.
+@JoinColumn             Define a coluna de relacionamento.
+@Enumerated             Mapeia enumerações.
+@PrePersist             Executa lógica antes da inserção.
+@PreUpdate              Executa lógica antes da atualização.
+@Transactional          Define uma transação.
+
+14.3. Cuidados técnicos
+
+- Evitar CascadeType.REMOVE nas entidades que possuem histórico.
+- Não utilizar exclusão física em registros relacionados.
+- Utilizar DTOs para não expor diretamente as entidades JPA.
+- Evitar relacionamentos bidirecionais desnecessários.
+- Utilizar FetchType.LAZY quando adequado.
+- Evitar consultas N+1.
+- Preservar a integridade referencial.
+- Definir explicitamente as regras de exclusão e atualização das chaves.
+
+======================================================================
+15. PAGINAÇÃO E FILTROS
+======================================================================
+
+Objetivo: permitir que o administrador consulte chamados sem carregar todos
+os registros do banco de dados de uma só vez.
+
+Filtros previstos:
+- ID do chamado.
+- Nome do solicitante.
+- Categoria.
+- Status.
+- Responsável.
+- Data inicial.
+- Data final.
+
+Recursos Spring Data JPA:
+- Pageable.
+- Page<T>.
+- PageRequest.
+- Sort.
+
+Exemplo de endpoint:
+GET /api/chamados?page=0&size=10&sort=abertoEm,desc
+
+O retorno deverá apresentar conteúdo da página, número da página,
+quantidade de registros por página, total de páginas e total de elementos.
+
+A pesquisa deverá respeitar as permissões: usuários comuns consultam apenas
+seus próprios chamados; administradores podem consultar todos os chamados.
+
+======================================================================
+16. AUDITORIA E TRANSAÇÕES
+======================================================================
+
+16.1. Auditoria
+
+Registrar as operações relevantes:
+- Abertura de chamado.
+- Atualização de informações.
+- Alteração de status.
+- Alteração de responsável.
+- Registro de atendimento.
+- Encerramento.
+- Reabertura.
+- Exclusão lógica.
+
+Cada registro deverá identificar o usuário que executou a operação, a ação,
+o campo alterado quando aplicável, o valor anterior, o novo valor e a data.
+
+16.2. Diferença entre atendimento e auditoria
+
+ATENDIMENTO:
+Registra o que foi feito para resolver o problema, incluindo observação,
+solução, responsável e data.
+
+AUDITORIA:
+Registra as operações feitas no sistema, incluindo quem alterou dados,
+qual campo foi alterado, o valor anterior, o novo valor e quando ocorreu.
+
+Os dois registros são diferentes e deverão ser preservados separadamente.
+
+16.3. Transações
+
+Utilizar @Transactional nas operações que atualizam múltiplas entidades.
+
+Exemplo de encerramento:
+1. Registrar atendimento.
+2. Atualizar o status do chamado.
+3. Registrar auditoria.
+4. Confirmar a transação.
+
+Se alguma etapa falhar, todas as alterações da transação deverão ser
+revertidas para evitar inconsistências.
+
+======================================================================
+17. VALIDAÇÕES E TRATAMENTO DE ERROS
+======================================================================
+
+17.1. Bean Validation
+
+@NotNull     Impede valor nulo.
+@NotBlank    Impede texto nulo, vazio ou composto apenas por espaços.
+@Size        Limita tamanho de um valor.
+@Email       Valida formato de e-mail, quando utilizado.
+@Pattern     Valida um padrão específico.
+@Valid       Dispara validações do objeto recebido.
+
+17.2. Regras de negócio no Service
+
+O Service deverá verificar:
+- Existência do usuário.
+- Existência do chamado.
+- Categoria ativa.
+- Responsável válido e ativo.
+- Permissão para executar a operação.
+- Status permitido.
+- Solução obrigatória no encerramento.
+- Proteção do último administrador.
+- Regras de exclusão lógica.
+
+17.3. Tratamento de exceções
+
+Utilizar @RestControllerAdvice e @ExceptionHandler.
+
+Situação                         HTTP
+Operação realizada               200 OK
+Registro criado                  201 Created
+Dados inválidos                  400 Bad Request
+Não autenticado                  401 Unauthorized
+Sem permissão                    403 Forbidden
+Registro inexistente             404 Not Found
+Conflito de dados                409 Conflict
+Erro interno                     500 Internal Server Error
+
+As respostas de erro deverão ser padronizadas e não deverão expor senhas,
+segredos, consultas SQL ou detalhes internos desnecessários.
+
+======================================================================
+18. TECNOLOGIAS E DEPENDÊNCIAS
+======================================================================
+
+Tecnologias principais:
+
+Java                  Linguagem principal.
+Spring Boot           Estrutura principal da aplicação.
+Spring Web            Desenvolvimento de APIs REST.
+Spring Security       Autenticação e autorização.
+Spring Data JPA       Persistência e consultas.
+Hibernate             Implementação JPA.
+PostgreSQL            Banco de dados relacional.
+Bean Validation       Validação de dados.
+BCrypt                Hash de senhas.
+Flyway                Versionamento do banco de dados.
+Maven                 Gerenciamento de dependências.
+
+Dependências Maven sugeridas:
+- spring-boot-starter-web
+- spring-boot-starter-security
+- spring-boot-starter-data-jpa
+- spring-boot-starter-validation
+- postgresql
+- flyway-core
+- flyway-database-postgresql
+- spring-boot-starter-test
+- spring-security-test
+
+A forma de autenticação (sessão ou JWT) deverá ser definida conforme a
+arquitetura do frontend e as necessidades da aplicação antes da implementação
+definitiva da segurança.
+
+======================================================================
+19. ORDEM DE DESENVOLVIMENTO
+======================================================================
+
+O desenvolvimento será feito gradualmente, por tipo de pacote. Cada etapa
+deverá ser compreendida, implementada e revisada antes de avançar.
+
+ETAPA 1 - MODELS (ENTIDADES)
+Criar as classes:
+- Usuario.
+- Categoria.
+- Chamado.
+- Atendimento.
+- HistoricoChamado.
+
+Definir atributos, tipos, enums e relacionamentos.
+
+ETAPA 2 - DTOs
+Criar os objetos de transferência:
+- LoginRequestDTO.
+- LoginResponseDTO.
+- UsuarioRequestDTO.
+- UsuarioResponseDTO.
+- ChamadoRequestDTO.
+- ChamadoResponseDTO.
+- ChamadoAtualizacaoDTO.
+- AtendimentoRequestDTO.
+- AtendimentoResponseDTO.
+
+ETAPA 3 - VALIDATION
+Implementar validações dos campos obrigatórios, tamanhos, formatos,
+senhas, soluções e dados dos chamados.
+
+ETAPA 4 - REPOSITORIES
+Criar interfaces utilizando JpaRepository:
+- UsuarioRepository.
+- CategoriaRepository.
+- ChamadoRepository.
+- AtendimentoRepository.
+- HistoricoChamadoRepository.
+
+ETAPA 5 - SERVICES
+Implementar regras de negócio:
+- Cadastro de usuários.
+- Atualização e exclusão lógica.
+- Abertura de chamados.
+- Consulta de chamados.
+- Atualização de informações.
+- Atribuição de responsáveis.
+- Registro de atendimento.
+- Encerramento.
+- Auditoria.
+- Paginação e filtros.
+
+ETAPA 6 - CONTROLLERS
+Criar endpoints REST:
+- AuthController.
+- UsuarioController.
+- ChamadoController.
+- AtendimentoController.
+
+Os Controllers deverão receber requisições, validar entradas e delegar
+operações aos Services.
+
+ETAPA 7 - CONFIG E SECURITY
+Implementar:
+- SecurityConfig.
+- Autenticação.
+- Autorização.
+- Roles.
+- BCrypt.
+- Proteção dos endpoints.
+- Identificação do usuário autenticado.
+
+ETAPA 8 - BANCO DE DADOS
+Consolidar:
+- PostgreSQL.
+- Estrutura das tabelas.
+- Chaves primárias e estrangeiras.
+- Restrições.
+- Índices.
+- Migrations Flyway.
+- Dados iniciais das categorias.
+
+Observação: um banco de desenvolvimento deverá estar disponível para
+validar entidades e repositories durante a implementação. Esta etapa
+representa a consolidação definitiva do esquema, migrations e configurações.
+
+ETAPA 9 - TESTES
+Executar testes unitários, de integração, repositories, controllers,
+autenticação, permissões, regras de negócio e integridade do banco.
+
+ETAPA 10 - ESTRUTURA DEFINITIVA
+Consolidar a árvore final de pacotes e arquivos após concluir as etapas,
+refletindo as classes realmente desenvolvidas.
+
+======================================================================
+20. CRITÉRIOS DE ACEITAÇÃO E TESTES
+======================================================================
+
+USUÁRIOS
+[ ] Cadastro de usuário.
+[ ] Login.
+[ ] Senha criptografada.
+[ ] Atualização de informações.
+[ ] Exclusão lógica.
+[ ] Proteção do último administrador ativo.
+
+CHAMADOS
+[ ] Abertura de chamado.
+[ ] ID automático.
+[ ] Solicitante automático.
+[ ] Data e hora automáticas.
+[ ] Categoria obrigatória.
+[ ] Status inicial ABERTO.
+[ ] Consulta de chamados.
+[ ] Atualização administrativa.
+[ ] Exclusão lógica.
+
+ATENDIMENTO
+[ ] Atribuição de responsável.
+[ ] Registro de observação.
+[ ] Registro de solução.
+[ ] Data e hora automáticas.
+[ ] Encerramento.
+[ ] Preservação de atendimentos anteriores.
+
+SEGURANÇA
+[ ] Usuário comum sem acesso administrativo.
+[ ] Administrador com permissões adequadas.
+[ ] Proteção das rotas.
+[ ] Identificação do usuário autenticado.
+[ ] Proteção contra acesso a chamados de terceiros.
+
+HISTÓRICO E DESEMPENHO
+[ ] Auditoria das operações.
+[ ] Histórico de atendimentos.
+[ ] Filtros de pesquisa.
+[ ] Paginação.
+[ ] Índices.
+[ ] Transações.
+
+======================================================================
+21. ESTRUTURA DEFINITIVA DE PACOTES
+======================================================================
+
+IMPORTANTE: A árvore abaixo é uma referência inicial. A estrutura final será
+consolidada somente depois que os pacotes e classes forem desenvolvidos e
+revisados, conforme a ordem de implementação definida.
+
+src/main/java/com/sistema/chamados/
+|
++-- config/
+|
++-- controller/
+|
++-- service/
+|
++-- repository/
+|
++-- model/
+|
++-- dto/
+|   +-- auth/
+|   +-- usuario/
+|   +-- chamado/
+|   +-- atendimento/
+|
++-- validation/
+|
++-- enums/
+|
++-- exception/
+|
++-- ChamadosApplication.java
+
+Estrutura de recursos:
+
+src/main/resources/
+|
++-- application.properties
+|
++-- db/
+    +-- migration/
+        +-- V1__create_usuarios.sql
+        +-- V2__create_categorias.sql
+        +-- V3__create_chamados.sql
+        +-- V4__create_atendimentos.sql
+        +-- V5__create_historico.sql
+        +-- V6__insert_categorias.sql
+
+Estrutura de testes:
+
+src/test/java/com/sistema/chamados/
+|
++-- controller/
++-- service/
++-- repository/
++-- integration/
+
+A estrutura poderá ser ajustada de acordo com o crescimento do projeto.
+
+======================================================================
+22. RECOMENDAÇÕES TÉCNICAS
+======================================================================
+
+1. Separar responsabilidades: Controllers recebem requisições, Services
+   executam regras de negócio e Repositories acessam o banco.
+
+2. Utilizar DTOs: não expor diretamente as entidades JPA nas respostas da API.
+
+3. Proteger senhas: utilizar BCrypt e nunca armazenar senhas em texto puro.
+
+4. Utilizar exclusão lógica: preservar relacionamentos e históricos.
+
+5. Utilizar transações: garantir consistência em operações de atendimento.
+
+6. Utilizar paginação: evitar consultas excessivamente grandes.
+
+7. Auditar operações: registrar quem realizou cada alteração.
+
+8. Utilizar Flyway: manter o histórico das alterações do banco.
+
+9. Criar testes: validar cada funcionalidade antes de avançar.
+
+10. Evitar complexidade desnecessária: implementar somente o que o sistema
+    realmente precisa.
+
+11. Proteger endpoints no backend: não confiar apenas nos controles da
+    interface.
+
+12. Preservar histórico: evitar exclusão física de chamados, atendimentos e
+    registros de auditoria.
+
+======================================================================
+23. SCRIPT SQL INICIAL - POSTGRESQL
+======================================================================
+
+Observação: este é um script inicial de referência. Em um projeto com Flyway,
+separe as instruções em migrations versionadas. Revise as regras e os tipos
+antes de utilizar em produção.
+
+CREATE TABLE usuarios (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    login VARCHAR(150) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    perfil VARCHAR(20) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMPTZ,
+    excluido_em TIMESTAMPTZ,
+    CONSTRAINT ck_usuario_perfil
+        CHECK (perfil IN ('USER', 'ADMIN'))
+);
+
+CREATE TABLE categorias (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    ativa BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE chamados (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    solicitante_id BIGINT NOT NULL,
+    categoria_id BIGINT NOT NULL,
+    responsavel_id BIGINT,
+    local VARCHAR(150) NOT NULL,
+    problema TEXT NOT NULL,
+    observacao TEXT,
+    status VARCHAR(20) NOT NULL DEFAULT 'ABERTO',
+    aberto_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMPTZ,
+    excluido_em TIMESTAMPTZ,
+    CONSTRAINT fk_chamado_solicitante
+        FOREIGN KEY (solicitante_id)
+        REFERENCES usuarios(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_chamado_categoria
+        FOREIGN KEY (categoria_id)
+        REFERENCES categorias(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_chamado_responsavel
+        FOREIGN KEY (responsavel_id)
+        REFERENCES usuarios(id) ON DELETE RESTRICT,
+    CONSTRAINT ck_chamado_status
+        CHECK (status IN ('ABERTO', 'EM_ANDAMENTO', 'FECHADO'))
+);
+
+CREATE TABLE atendimentos (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    chamado_id BIGINT NOT NULL,
+    responsavel_id BIGINT NOT NULL,
+    observacao TEXT,
+    solucao TEXT NOT NULL,
+    realizado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_atendimento_chamado
+        FOREIGN KEY (chamado_id)
+        REFERENCES chamados(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_atendimento_responsavel
+        FOREIGN KEY (responsavel_id)
+        REFERENCES usuarios(id) ON DELETE RESTRICT,
+    CONSTRAINT ck_atendimento_solucao
+        CHECK (LENGTH(TRIM(solucao)) > 0)
+);
+
+CREATE TABLE historico_chamado (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    chamado_id BIGINT NOT NULL,
+    usuario_id BIGINT NOT NULL,
+    acao VARCHAR(50) NOT NULL,
+    campo_alterado VARCHAR(100),
+    valor_anterior TEXT,
+    valor_novo TEXT,
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_historico_chamado
+        FOREIGN KEY (chamado_id)
+        REFERENCES chamados(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_historico_usuario
+        FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id) ON DELETE RESTRICT
+);
+
+INSERT INTO categorias (nome) VALUES
+('Impressora'),
+('Rede / Internet'),
+('Computador / Notebook'),
+('Periférico ou cabo com defeito'),
+('Sistema / Software'),
+('Acesso ou senha'),
+('Solicitação de material ou equipamento'),
+('Outro');
+
+CREATE INDEX idx_chamados_solicitante
+    ON chamados(solicitante_id);
+
+CREATE INDEX idx_chamados_categoria
+    ON chamados(categoria_id);
+
+CREATE INDEX idx_chamados_responsavel
+    ON chamados(responsavel_id);
+
+CREATE INDEX idx_chamados_status
+    ON chamados(status);
+
+CREATE INDEX idx_chamados_aberto_em
+    ON chamados(aberto_em DESC);
+
+CREATE INDEX idx_atendimentos_chamado
+    ON atendimentos(chamado_id);
+
+CREATE INDEX idx_historico_chamado
+    ON historico_chamado(chamado_id);
+
+CREATE INDEX idx_historico_criado_em
+    ON historico_chamado(criado_em DESC);
+
+======================================================================
+24. CONCLUSÃO
+======================================================================
+
+O projeto tem como finalidade desenvolver uma aplicação de gerenciamento
+de chamados de suporte técnico, com estrutura organizada, controle de acesso,
+gerenciamento de usuários, acompanhamento de solicitações, registro de
+atendimentos e preservação do histórico das operações.
+
+A implementação será realizada gradualmente, começando pelas entidades e
+seguindo por DTOs, validações, repositories, services, controllers e
+configurações de segurança.
+
+A consolidação do banco de dados e a organização definitiva dos pacotes
+serão realizadas nas etapas finais, respeitando a evolução real do projeto.
+
+Resultado esperado: uma aplicação back-end estruturada com Java e Spring
+Boot, utilizando Spring Security, Spring Data JPA e PostgreSQL, com foco em
+organização, segurança, manutenção e integridade dos dados.
+
+FIM DA DOCUMENTAÇÃO TÉCNICA
+Sistema de Gerenciamento de Chamados de TI - Versão 1.0
