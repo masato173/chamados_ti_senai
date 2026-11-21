@@ -101,7 +101,11 @@ Outros comandos:
 
 ```
 chamados_ti_senai/
-├── .claude/skills/padrao-codigo-chamados/SKILL.md   # padrão de código para o Claude Code
+├── .claude/skills/                                   # skills do Claude Code
+│   ├── protocolo-alteracao-chamados/SKILL.md         # regras absolutas e protocolo de alteração
+│   ├── padrao-codigo-chamados/SKILL.md               # padrão de código
+│   ├── code-review-chamados/SKILL.md                 # revisão de código
+│   └── code-security-chamados/SKILL.md               # checklist de segurança
 ├── docs/                                             # documentação técnica original
 ├── src/
 │   ├── main/
@@ -153,7 +157,10 @@ Cada etapa é implementada, revisada e registrada em [`MEMORY.md`](MEMORY.md) an
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Camadas, pacotes, modelo de dados, fluxos, segurança e endpoints planejados |
 | [`MEMORY.md`](MEMORY.md) | Decisões tomadas, decisões pendentes, status de cada etapa |
 | [`CLAUDE.md`](CLAUDE.md) | Instruções para o Claude Code trabalhar no projeto |
+| [`.claude/skills/protocolo-alteracao-chamados/SKILL.md`](.claude/skills/protocolo-alteracao-chamados/SKILL.md) | Regras absolutas (RA-01 a RA-15) e protocolo de alteração |
 | [`.claude/skills/padrao-codigo-chamados/SKILL.md`](.claude/skills/padrao-codigo-chamados/SKILL.md) | Padrão de código Java do projeto |
+| [`.claude/skills/code-review-chamados/SKILL.md`](.claude/skills/code-review-chamados/SKILL.md) | Roteiro e formato de revisão de código |
+| [`.claude/skills/code-security-chamados/SKILL.md`](.claude/skills/code-security-chamados/SKILL.md) | Checklist de segurança (S-01 a S-47) e testes obrigatórios |
 | [`docs/Documentacao_Tecnica_Sistema_Chamados_TI.txt`](docs/Documentacao_Tecnica_Sistema_Chamados_TI.txt) | Documentação técnica original, versão 1.0 |
 
 ## Desenvolvimento com Claude Code
@@ -164,10 +171,22 @@ Na raiz do projeto:
 claude
 ```
 
-O Claude Code lê o `CLAUDE.md` automaticamente e, por ele, a arquitetura, a memória e a skill de padrão de código. Para começar a próxima etapa:
+O Claude Code lê o `CLAUDE.md` automaticamente e, por ele, a arquitetura, a memória e as skills do projeto. Para começar a próxima etapa:
 
 ```
-Leia o MEMORY.md e implemente a Etapa 1 (Models), seguindo o ARCHITECTURE.md e a skill padrao-codigo-chamados.
+Leia o MEMORY.md e implemente a Etapa 1 (Models) seguindo o protocolo-alteracao-chamados, o ARCHITECTURE.md e a skill padrao-codigo-chamados.
+```
+
+Para revisar uma entrega:
+
+```
+Revise as alterações desta branch com a skill code-review-chamados.
+```
+
+Para uma auditoria de segurança:
+
+```
+Faça uma revisão de segurança do projeto com a skill code-security-chamados.
 ```
 
 ## Autor

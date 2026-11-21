@@ -8,7 +8,7 @@ Memória do projeto: o que já foi decidido, o que falta decidir e onde o desenv
 | --- | --- |
 | Etapa concluída | 0 — Estrutura do projeto |
 | Próxima etapa | 1 — Models (entidades e enums) |
-| Última atualização | 2026-11-15 |
+| Última atualização | 2026-11-19 |
 | Código de domínio | Nenhum. Só `ChamadosApplication` e pastas vazias |
 
 ## Contexto
@@ -17,6 +17,8 @@ Memória do projeto: o que já foi decidido, o que falta decidir e onde o desenv
 - Requisitos na documentação técnica v1.0: [`docs/Documentacao_Tecnica_Sistema_Chamados_TI.txt`](docs/Documentacao_Tecnica_Sistema_Chamados_TI.txt).
 - Arquitetura detalhada em [`ARCHITECTURE.md`](ARCHITECTURE.md).
 - Padrão de código na skill [`padrao-codigo-chamados`](.claude/skills/padrao-codigo-chamados/SKILL.md), derivada da análise do projeto Adopet (Alura), com os erros encontrados nele corrigidos.
+- Regras absolutas (RA-01 a RA-15) e protocolo de alteração na skill [`protocolo-alteracao-chamados`](.claude/skills/protocolo-alteracao-chamados/SKILL.md).
+- Revisão de código na skill [`code-review-chamados`](.claude/skills/code-review-chamados/SKILL.md) e checklist de segurança (S-01 a S-47) na skill [`code-security-chamados`](.claude/skills/code-security-chamados/SKILL.md).
 
 ## Decisões tomadas
 
@@ -57,6 +59,13 @@ Definidas para dar ponto de partida; não constam na documentação técnica.
 | 8 | Haverá CRUD de categorias ou só a carga inicial? | Etapa 6 |
 | 9 | Formato do login: texto livre ou e-mail (`@Email`)? | Etapa 3 |
 | 10 | Versão do PostgreSQL usada no desenvolvimento | Etapa 8 |
+| 11 | Usuário comum que acessa chamado de outro recebe `403` ou `404`? | Etapa 5 |
+| 12 | Como é criado o primeiro administrador, sem senha nem hash no repositório público? | Etapa 7 |
+| 13 | Quais registros de atendimento o usuário comum vê no detalhe do chamado (seção 9.3)? | Etapa 2 |
+| 14 | Tamanho máximo dos campos `TEXT` (`problema`, `observacao`, `solucao`) e da página (`size`) | Etapa 2 (campos) e Etapa 6 (página) |
+| 15 | Política mínima de senha (tamanho mínimo; o máximo é 72 bytes, limite do BCrypt) | Etapa 2 |
+
+As decisões 11 a 15 foram levantadas na criação das skills de revisão e segurança (2026-11-19).
 
 Observação: o sumário da documentação técnica lista 26 seções; o corpo tem 24 com numeração diferente. As referências deste projeto usam a numeração do corpo.
 
@@ -87,6 +96,22 @@ Criado:
 - Cópia da documentação técnica em `docs/`.
 
 Não verificado: o build (`./mvnw verify`) não foi executado na criação. Rodar na primeira sessão local.
+
+### Ajuste da Etapa 0 — Skills de processo (2026-11-19)
+
+Criado:
+
+- `.claude/skills/protocolo-alteracao-chamados/SKILL.md`: regras absolutas RA-01 a RA-15, níveis de risco, protocolo em 3 fases, ficha de alteração e relatório final.
+- `.claude/skills/code-review-chamados/SKILL.md`: revisão em 7 passadas, severidade e formato do relatório.
+- `.claude/skills/code-security-chamados/SKILL.md`: checklist S-01 a S-47 ligado ao OWASP API Top 10 (2023) e testes de segurança obrigatórios.
+- `CLAUDE.md` e `README.md` passam a citar as skills.
+
+Decisões:
+
+- Decisões pendentes 11 a 15 adicionadas à tabela.
+- Ao implementar a proteção do último administrador (`ARCHITECTURE.md`, seção 5.4), bloquear as linhas dos administradores ativos e verificar o tamanho da lista; o PostgreSQL recusa `FOR UPDATE` em consulta com `count(*)` (skill `code-security-chamados`, item S-35).
+
+Não verificado: build não executado (alteração só de documentação e skills; nenhum código Java mudou).
 
 <!-- Modelo para as próximas etapas:
 
