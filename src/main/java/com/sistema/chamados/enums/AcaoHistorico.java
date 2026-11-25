@@ -1,0 +1,14 @@
+package com.sistema.chamados.enums;
+
+public enum AcaoHistorico {
+   
+    CHAMADO_ABERTO,
+    CHAMADO_ATUALIZADO,
+    STATUS_ALTERADO,
+    RESPONSAVEL_ALTERADO,
+    ATENDIMENTO_REGISTRADO,
+    CHAMADO_ENCERRADO,
+    CHAMADO_EXCLUIDO,
+    CHAMADO_REABERTO;
+
+}
