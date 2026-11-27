@@ -6,10 +6,11 @@ Memória do projeto: o que já foi decidido, o que falta decidir e onde o desenv
 
 | Item | Valor |
 | --- | --- |
-| Etapa concluída | 0 — Estrutura do projeto |
-| Próxima etapa | 1 — Models (entidades e enums) |
-| Última atualização | 2026-11-19 |
-| Código de domínio | Nenhum. Só `ChamadosApplication` e pastas vazias |
+| Etapa concluída | 1 — Models (entidades e enums) |
+| Próxima etapa | 2 — DTOs |
+| Última atualização | 2026-11-26 |
+| Código de domínio | Enums `Perfil`, `StatusChamado`, `AcaoHistorico` e entidades `Usuario`, `Categoria`, `Chamado`, `Atendimento`, `HistoricoChamado`, com testes unitários |
+| Atenção | Ainda não há migrations. Até a Etapa 8, `spring-boot:run` deve falhar na validação do esquema (`ddl-auto=validate` sem tabelas). O `./mvnw clean verify` não sobe a aplicação e passa |
 
 ## Contexto
 
@@ -33,6 +34,9 @@ Memória do projeto: o que já foi decidido, o que falta decidir e onde o desenv
 | 2026-11-15 | Credenciais do banco por variáveis de ambiente (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`) | Etapa 0 |
 | 2026-11-15 | `spring.jpa.hibernate.ddl-auto=validate`: o esquema é criado só pelo Flyway | Etapa 0 |
 | 2026-11-15 | Repositório público `masato173/chamados_ti_senai` | Escolha do autor |
+| 2026-11-26 | Mapear só os relacionamentos necessários: `@OneToMany` só em `Chamado` (atendimentos e histórico); `Usuario` e `Categoria` sem coleções. **Diverge da §14.1**, que lista `@OneToMany` em `Usuario` e `Categoria`; segue o `ARCHITECTURE.md` §4.1 e a §14.3 ("evitar relacionamentos bidirecionais desnecessários"). Os chamados de um usuário ou categoria vêm por consulta paginada no repository. **Exceção:** `Chamado.atendimentos` (`@OneToMany(mappedBy = "chamado")`) fica mapeado porque o detalhe do chamado apresenta os registros de atendimento permitidos ao perfil (§9.3). Quais registros o usuário comum vê é a decisão pendente 13 | Autor, Etapa 1 |
+| 2026-11-26 | `equals` por `instanceof` + `getId()`, com id nulo nunca igual; `hashCode` por `Objects.hashCode(id)`. Substitui o modelo da skill `padrao-codigo-chamados` (`getClass()` + campo), que dá `false` ao comparar a entidade com o proxy `LAZY` dela mesma | Autor, Etapa 1 |
+| 2026-11-26 | Testes unitários das entidades já na Etapa 1, em `src/test/java/com/sistema/chamados/model/` (pasta nova, fora da árvore da §21) | Autor, Etapa 1 |
 
 ### Propostas da Etapa 0 (podem ser revistas)
 
@@ -44,6 +48,19 @@ Definidas para dar ponto de partida; não constam na documentação técnica.
 - Rotas com prefixo `/api` conforme a tabela da seção 6 do `ARCHITECTURE.md`.
 - Bloqueio pessimista na contagem de administradores ativos.
 - Datas em `OffsetDateTime` para colunas `TIMESTAMPTZ`.
+
+### Propostas da Etapa 1 (podem ser revistas)
+
+Não constam na documentação técnica.
+
+- `Atendimento` e `HistoricoChamado` só de inserção: `@Immutable` (Hibernate) e `updatable = false` em todas as colunas, sem setters (S-37, RA-04, RA-05).
+- `solicitante_id` com `updatable = false`: a §9.4 não lista o solicitante entre os campos que o admin altera.
+- `atualizado_em` fica nulo na criação e só é preenchido pelo `@PreUpdate`.
+- Os getters das coleções de `Chamado` devolvem lista só de leitura.
+- Construtores recebem parâmetros simples, não DTO. O modelo da skill recebe `ChamadoRequestDTO`, que só existe a partir da Etapa 2.
+- `Usuario` recebe a senha já criptografada (parâmetro `senhaCriptografada`). Quem codifica é o service, com o `PasswordEncoder`.
+- Entidade ainda sem id não deve entrar em `HashSet` nem em `HashMap`: o `hashCode` muda quando o banco gera o id.
+- Atualizar o modelo de entidade da skill `padrao-codigo-chamados` com o `equals` adotado. Ainda não foi feito.
 
 ## Decisões pendentes
 
@@ -64,8 +81,11 @@ Definidas para dar ponto de partida; não constam na documentação técnica.
 | 13 | Quais registros de atendimento o usuário comum vê no detalhe do chamado (seção 9.3)? | Etapa 2 |
 | 14 | Tamanho máximo dos campos `TEXT` (`problema`, `observacao`, `solucao`) e da página (`size`) | Etapa 2 (campos) e Etapa 6 (página) |
 | 15 | Política mínima de senha (tamanho mínimo; o máximo é 72 bytes, limite do BCrypt) | Etapa 2 |
+| 16 | §9.4 "alterar categoria, quando permitido": em que casos a categoria pode mudar? Um chamado `FECHADO` pode ser atualizado? | Etapa 5 |
+| 17 | §8.2 "dados permitidos": quais campos do usuário o admin pode atualizar? Trocar o perfil de `ADMIN` para `USER` passa pela proteção do último administrador (§8.4)? | Etapa 2 |
+| 18 | Existe desativação de conta separada da exclusão lógica (§8.1 "situação da conta", §8.4 "desativar ou excluir")? Existe reativação? | Etapa 5 |
 
-As decisões 11 a 15 foram levantadas na criação das skills de revisão e segurança (2026-11-19).
+As decisões 11 a 15 foram levantadas na criação das skills de revisão e segurança (2026-11-19). As decisões 16 a 18 foram levantadas na Etapa 1 (2026-11-26).
 
 Observação: o sumário da documentação técnica lista 26 seções; o corpo tem 24 com numeração diferente. As referências deste projeto usam a numeração do corpo.
 
@@ -112,6 +132,46 @@ Decisões:
 - Ao implementar a proteção do último administrador (`ARCHITECTURE.md`, seção 5.4), bloquear as linhas dos administradores ativos e verificar o tamanho da lista; o PostgreSQL recusa `FOR UPDATE` em consulta com `count(*)` (skill `code-security-chamados`, item S-35).
 
 Não verificado: build não executado (alteração só de documentação e skills; nenhum código Java mudou).
+
+### Etapa 1 — Models (2026-11-26)
+
+Criado:
+
+- Enums `Perfil`, `StatusChamado` e `AcaoHistorico`, com os valores do `ARCHITECTURE.md` §4.2.
+- Entidades `Usuario`, `Categoria`, `Chamado`, `Atendimento` e `HistoricoChamado`, com os campos, tipos e tamanhos da §13.
+- Métodos com regra definida na documentação:
+  - construtores de criação: `Chamado` começa `ABERTO` (§6.1) e `Usuario` começa ativo (§13.1);
+  - `excluir()` em `Usuario` (§8.3) e em `Chamado` (§9.5);
+  - datas por `@PrePersist` e `@PreUpdate` (RF09, §14.2).
+- Testes unitários em `src/test/java/com/sistema/chamados/model/` (30 casos, sem Spring e sem banco).
+- Removidos os `.gitkeep` de `enums/` e `model/`.
+
+Decisões: as três linhas de 2026-11-26 na tabela "Decisões tomadas", incluindo a divergência da §14.1, e as "Propostas da Etapa 1".
+
+Não implementado porque depende de decisão:
+
+- `alterarStatus`, `encerrar` e `reabrir`: decisões 3 e 4.
+- `atribuirResponsavel`: decisões 5 e 6.
+- `atualizar` do chamado: decisão 16 e o `ChamadoAtualizacaoDTO` (Etapa 2).
+- `alterarSenha`, `atualizar`, `desativar` e `reativar` do usuário: decisões 7, 17 e 18.
+- Construtor público, `ativar` e `desativar` de `Categoria`: decisão 8.
+- As verificações de categoria ativa (§17.2) e do último administrador (§8.4) ficam no service, na Etapa 5. `Usuario.excluir()` não faz a verificação do último administrador.
+
+Verificado:
+
+- `./mvnw clean verify` verde, com os 30 testes passando.
+- O metamodelo do Hibernate foi montado sem banco, com um script descartável fora do repositório. O DDL gerado bate com a §23 em colunas, tipos, tamanhos, `NOT NULL` e `UNIQUE`. Nomes de FK, `ON DELETE RESTRICT`, `DEFAULT`, `GENERATED ALWAYS` e o `CHECK` da solução ficam para as migrations da Etapa 8.
+
+Não verificado:
+
+- Validação contra o PostgreSQL real (`ddl-auto=validate`). Depende das migrations da Etapa 8.
+- Chamada dos callbacks `@PrePersist` e `@PreUpdate` pelo próprio Hibernate. Os testes chamam os métodos direto; a chamada real fica para os testes de repository.
+
+Pendências para as próximas etapas:
+
+- Etapa 2: nenhum DTO de resposta usa `Usuario.getSenha()` (RA-07, S-21).
+- Etapa 4: listagens que leem `atendimentos` ou `historico` usam `@EntityGraph` ou `JOIN FETCH`, para evitar N+1.
+- Etapa 5: o service nunca grava senha ou hash em `valor_anterior`/`valor_novo` (S-33) e busca chamado e usuário ignorando os excluídos antes de chamar `excluir()`.
 
 <!-- Modelo para as próximas etapas:
 
