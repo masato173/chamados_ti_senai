@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
 
 import java.time.OffsetDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "atendimentos")
@@ -81,7 +80,7 @@ public class Atendimento {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Atendimento.class.hashCode();
     }
 
 }

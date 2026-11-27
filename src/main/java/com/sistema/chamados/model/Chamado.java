@@ -7,7 +7,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "chamados")
@@ -53,9 +52,6 @@ public class Chamado {
 
     @OneToMany(mappedBy = "chamado")
     private List<Atendimento> atendimentos = new ArrayList<>();
-
-    @OneToMany(mappedBy = "chamado")
-    private List<HistoricoChamado> historico = new ArrayList<>();
 
     protected Chamado() {}
 
@@ -130,10 +126,6 @@ public class Chamado {
         return Collections.unmodifiableList(atendimentos);
     }
 
-    public List<HistoricoChamado> getHistorico() {
-        return Collections.unmodifiableList(historico);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -145,7 +137,7 @@ public class Chamado {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Chamado.class.hashCode();
     }
 
 }

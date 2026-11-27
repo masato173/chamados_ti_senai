@@ -4,7 +4,6 @@ import com.sistema.chamados.enums.Perfil;
 import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "usuarios")
@@ -111,7 +110,7 @@ public class Usuario {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Usuario.class.hashCode();
     }
 
 }

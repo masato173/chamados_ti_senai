@@ -1,6 +1,5 @@
 package com.sistema.chamados.model;
 
-import com.sistema.chamados.enums.AcaoHistorico;
 import com.sistema.chamados.enums.Perfil;
 import com.sistema.chamados.enums.StatusChamado;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +31,6 @@ class ChamadoTest {
         Assertions.assertNull(chamado.getResponsavel());
         Assertions.assertNull(chamado.getExcluidoEm());
         Assertions.assertTrue(chamado.getAtendimentos().isEmpty());
-        Assertions.assertTrue(chamado.getHistorico().isEmpty());
     }
 
     @Test
@@ -83,19 +81,6 @@ class ChamadoTest {
 
         // ASSERT
         Assertions.assertThrows(UnsupportedOperationException.class, () -> atendimentos.add(atendimento));
-    }
-
-    @Test
-    void naoDeveriaPermitirAlterarHistoricoPelaLista() {
-        // ARRANGE
-        var chamado = new Chamado(solicitante, categoria, "Sala 12", "Impressora não liga", null);
-        var historico = new HistoricoChamado(chamado, solicitante, AcaoHistorico.CHAMADO_ABERTO, null, null, null);
-
-        // ACT
-        var registros = chamado.getHistorico();
-
-        // ASSERT
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> registros.add(historico));
     }
 
     @Test

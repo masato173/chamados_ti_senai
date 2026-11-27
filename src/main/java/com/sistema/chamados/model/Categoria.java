@@ -2,8 +2,6 @@ package com.sistema.chamados.model;
 
 import jakarta.persistence.*;
 
-import java.util.Objects;
-
 @Entity
 @Table(name = "categorias")
 public class Categoria {
@@ -43,7 +41,7 @@ public class Categoria {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Categoria.class.hashCode();
     }
 
 }
