@@ -154,6 +154,10 @@ Ficha de alteração (níveis 2 e 3):
 - **Commit sugerido:** `etapa-N: ...`
 ````
 
+7. Explicar cada arquivo novo ou alterado: o que cada anotação ou decisão faz e por quê, em poucas linhas.
+8. Aplicar um quiz de 5 questões rápidas e técnicas sobre as mudanças da etapa: múltipla escolha, 4 alternativas e uma correta, cobrando o porquê das escolhas, não nomes decorados.
+9. Mostrar as respostas e as explicações do quiz só depois que o autor responder.
+
 ## 6. Pedido que fere uma regra absoluta
 
 1. Parar antes de editar.

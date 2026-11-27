@@ -35,6 +35,9 @@ Alteração de nível 3 (segurança, migration, entidade, auditoria, contrato da
     3. Atualize o `MEMORY.md` (estado atual + registro da etapa).
     4. Marque a etapa no `README.md`.
     5. Sugira a mensagem de commit.
+    6. Explique cada arquivo novo ou alterado: o que cada anotação ou decisão faz e por quê, em poucas linhas.
+    7. Aplique um quiz de 5 questões rápidas e técnicas sobre as mudanças da etapa: múltipla escolha, 4 alternativas e uma correta, cobrando o porquê das escolhas, não nomes decorados.
+    8. Mostre as respostas e as explicações do quiz só depois que o autor responder.
 - Apague o `.gitkeep` de uma pasta quando ela receber a primeira classe.
 
 ## Comandos

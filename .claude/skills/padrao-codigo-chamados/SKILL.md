@@ -239,14 +239,15 @@ public class Chamado {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Chamado chamado = (Chamado) o;
-        return Objects.equals(id, chamado.id);
+        if (!(o instanceof Chamado outro)) {
+            return false;
+        }
+        return id != null && id.equals(outro.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Chamado.class.hashCode();
     }
 
 }
@@ -258,7 +259,9 @@ public class Chamado {
 - Estado muda por métodos de negócio (`encerrar`, `excluir`, `atribuirResponsavel`), não por setters. Cada método atualiza **todos** os campos afetados.
 - Datas com `@PrePersist` e `@PreUpdate`.
 - Sem `CascadeType.REMOVE`. Sem exclusão física.
-- `equals` e `hashCode` só pelo `id`; comparar entidades com `equals`, nunca `==`.
+- `equals` só pelo `id`, com `instanceof` e `getId()`. Assim aceita o proxy `LAZY` do Hibernate, que é uma subclasse da entidade com o campo `id` vazio. Id nulo nunca é igual: duas entidades ainda não salvas são registros diferentes.
+- `hashCode` fixo por classe (`Chamado.class.hashCode()`): não muda quando o banco gera o id e é o mesmo para o proxy.
+- Comparar entidades com `equals`, nunca `==`.
 
 ### Repository
 
@@ -334,6 +337,7 @@ CREATE TABLE categorias (
 
 - JUnit 5 + Mockito, no mesmo pacote da classe testada.
 - Corpo com `// ARRANGE`, `// ACT`, `// ASSERT`.
+- Asserções do JUnit 5 com a classe qualificada: `Assertions.assertEquals`, `Assertions.assertTrue`, `Assertions.assertThrows` etc. (`import org.junit.jupiter.api.Assertions;`). Sem AssertJ (`assertThat`).
 - Unitário: `@ExtendWith(MockitoExtension.class)`, `@InjectMocks`, `@Mock`, `given(...).willReturn(...)`, `then(mock).should()`.
 - Controller: `@WebMvcTest` + `MockMvc` + `@MockitoBean`; segurança com `@WithMockUser(roles = "ADMIN")`.
 - Repository: `@DataJpaTest`.
@@ -367,9 +371,9 @@ CREATE TABLE categorias (
 - [ ] Permissão aplicada no backend
 - [ ] Auditoria registrada nas alterações
 - [ ] Exclusão lógica e consultas ignorando excluídos
-- [ ] Entidade com métodos de negócio completos, `equals`/`hashCode` por `id`
+- [ ] Entidade com métodos de negócio completos, `equals` por `id` (`instanceof` + `getId()`) e `hashCode` fixo por classe
 - [ ] Repository sem `findAll()` + filtro; listagens paginadas
 - [ ] DTO `record` com Bean Validation; resposta sem entidade nem senha
 - [ ] Migration nova (nunca editar aplicada), com FK nomeada, `CHECK` e índice
-- [ ] Testes com caso válido e inválido
+- [ ] Testes com caso válido e inválido, asserções `Assertions.xxx` do JUnit 5 (sem AssertJ)
 - [ ] Nenhum item da seção 9

@@ -2,7 +2,7 @@
 
 API REST para abrir, acompanhar e encerrar chamados de suporte técnico de TI, com controle de acesso por perfil, histórico de atendimentos e auditoria das operações.
 
-> **Status:** Etapa 0 concluída — estrutura do projeto criada, ainda sem código de domínio.
+> **Status:** Etapa 1 concluída — enums e entidades JPA criados, com testes unitários. A API só sobe depois das migrations da Etapa 8.
 > O desenvolvimento segue as etapas descritas em [Ordem de desenvolvimento](#ordem-de-desenvolvimento).
 
 ## Sumário
@@ -123,7 +123,7 @@ chamados_ti_senai/
 │   │   └── resources/
 │   │       ├── application.properties
 │   │       └── db/migration/
-│   └── test/java/com/sistema/chamados/{controller,service,repository,integration}/
+│   └── test/java/com/sistema/chamados/{controller,service,repository,integration,model}/
 ├── ARCHITECTURE.md
 ├── CLAUDE.md
 ├── MEMORY.md
@@ -137,7 +137,7 @@ As pastas vazias têm um arquivo `.gitkeep` só para o Git guardá-las. Ele pode
 ## Ordem de desenvolvimento
 
 - [x] **Etapa 0** — Estrutura do projeto, dependências e documentação
-- [ ] **Etapa 1** — Models (entidades e enums)
+- [x] **Etapa 1** — Models (entidades e enums)
 - [ ] **Etapa 2** — DTOs
 - [ ] **Etapa 3** — Validações
 - [ ] **Etapa 4** — Repositories
